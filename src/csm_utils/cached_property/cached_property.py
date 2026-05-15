@@ -31,6 +31,7 @@ not parameterizable.
 
 # Standard imports
 import sys
+assert sys.version_info < (3, 9)
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -41,8 +42,6 @@ from typing import (
     overload,
 )
 from typing_extensions import Self
-
-from csm_utils.typing_imports import NoReturn
 
 if sys.version_info < (3, 8):
     # <= Python 3.7
@@ -70,20 +69,22 @@ class cached_property(_cp, Generic[_T]):
     if TYPE_CHECKING:
         # The type signatures below are chosen deliberately to match
         # how mypy interprets functools.cached_property in Python 3.9+
-        def __init__(self, func: Callable[[_S], _T]) -> None: ...
+        # We have to calm pylint down on a few things, since this code is not
+        # present at runtime, and is just to help mypyp
+        def __init__(self, func: Callable[[_S], _T]) -> None: ...  # pylint: disable=super-init-not-called
 
         # mypy complains that our type signatures conflict with the
         # parent class, but we already know this -- if the parent class
         # was typed the way we wanted, none of this would be
         # necessary
-        @overload  # type: ignore[override]
+        @overload  # type: ignore[override]  # pylint: disable=signature-differs
         def __get__(
             self,
             instance: None,
             owner: Type[_S],
         ) -> Self: ...
 
-        @overload
+        @overload  # pylint: disable=signature-differs
         def __get__(
             self,
             instance: _S,
