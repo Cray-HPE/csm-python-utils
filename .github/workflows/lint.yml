@@ -74,7 +74,7 @@ jobs:
       env:
         GIT_REPO_NAME: "${GITHUB_REPOSITORY#*/}"
       run: |
-        pip install dist/*.whl[ci]
+        pip install csm-utils[ci] --find-links ./dist
         pip list --format freeze
         nox -s lint
   nox-typecheck:
@@ -106,6 +106,6 @@ jobs:
       env:
         GIT_REPO_NAME: "${GITHUB_REPOSITORY#*/}"
       run: |
-        pip install dist/*.whl[ci]
+        pip install csm-utils[ci] --find-links ./dist
         pip list --format freeze
         nox -s type_check
