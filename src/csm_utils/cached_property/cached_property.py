@@ -44,7 +44,14 @@ from typing import (
 
 from csm_utils.typing_imports import Self
 
-if sys.version_info < (3, 8):
+if TYPE_CHECKING:
+    # mypy does not handle interpreting these old-version imports properly,
+    # so for its sake, we define a minimal _cp class stub here
+    from typing import Any
+    class _cp:
+        def __init__(self, func: Callable[[Any], Any]) -> None: ...
+        def __get__(self, instance: Any, owner: Any = None) -> Any: ..
+elif sys.version_info < (3, 8):
     # <= Python 3.7
     from backports.cached_property import cached_property as _cp
 elif sys.version_info < (3, 9):
@@ -80,7 +87,7 @@ class cached_property(_cp, Generic[_T]):
         # parent class, but we already know this -- if the parent class
         # was typed the way we wanted, none of this would be
         # necessary
-        @overload  # type: ignore[override]
+        @overload
         def __get__(  # pylint: disable=signature-differs
             self,
             instance: None,
@@ -97,5 +104,5 @@ class cached_property(_cp, Generic[_T]):
         def __get__(
             self,
             instance: Optional[_S],
-            owner: Optional[Type[_S]]=None
+            owner: Optional[Type[_S]] = None
         ) -> Union[Self, _T]: ...
