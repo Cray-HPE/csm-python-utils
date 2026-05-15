@@ -32,7 +32,7 @@ we have to define a hack version ourselves
 # We do not vary these imports based on Python version, because this
 # should only be used with Python 3.6
 from enum import Enum
-from typing import Any, List, Tuple, Union, TYPE_CHECKING
+from typing import Any, List, Tuple, Union
 
 # This try/except is mainly to make pylint happy, since it runs on
 # a Python version where we do not install typing_extensions
