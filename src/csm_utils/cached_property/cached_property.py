@@ -40,12 +40,8 @@ from typing import (
     TypeVar,
     overload,
 )
-# This try/except is mainly to make pylint happy, since it runs on
-# a Python version where we do not install typing_extensions
-try:
-    from typing_extensions import Self
-except ImportError:
-    from typing import Self
+
+from csm_utils.typing_imports import Self
 
 if sys.version_info < (3, 8):
     # <= Python 3.7
@@ -81,18 +77,18 @@ class cached_property(_cp, Generic[_T]):
         # parent class, but we already know this -- if the parent class
         # was typed the way we wanted, none of this would be
         # necessary
-        @overload  # type: ignore[override]  # pylint: disable=signature-differs
+        @overload  # type: ignore[override]
         def __get__(
             self,
             instance: None,
             owner: Type[_S],
-        ) -> Self: ...
+        ) -> Self: ...  # pylint: disable=signature-differs
 
-        @overload  # pylint: disable=signature-differs
+        @overload
         def __get__(
             self,
             instance: _S,
             owner: Optional[Type[_S]]
-        ) -> _T: ...
+        ) -> _T: ...  # pylint: disable=signature-differs
 
         def __get__(self, instance, owner=None): ...

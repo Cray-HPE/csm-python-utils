@@ -34,7 +34,12 @@ we have to define a hack version ourselves
 from enum import Enum
 from typing import Any, List, Tuple, Union
 
-from typing_extensions import TypeAlias
+# This try/except is mainly to make pylint happy, since it runs on
+# a Python version where we do not install typing_extensions
+try:
+    from typing_extensions import TypeAlias
+except ImportError:
+    from typing import TypeAlias
 
 
 # These are the valid types that can be used inside a Literal (except
