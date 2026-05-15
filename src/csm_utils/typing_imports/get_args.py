@@ -39,7 +39,7 @@ from typing import Any, List, Tuple, Union
 try:
     from typing_extensions import TypeAlias
 except ImportError:
-    from typing import TypeAlias  # type: ignore[attr-defined, no-redef, unused-ignore]  # pylint: disable=ungrouped-imports
+    from typing import TypeAlias  # type: ignore[attr-defined, no-redef, unused-ignore]  # pylint: disable=ungrouped-imports  # noqa: E501
 
 
 # These are the valid types that can be used inside a Literal (except
