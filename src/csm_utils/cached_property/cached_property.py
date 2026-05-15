@@ -55,6 +55,7 @@ else:
 _S = TypeVar("_S")
 _T = TypeVar("_T")
 
+
 class cached_property(_cp, Generic[_T]):
     """
     This wrapper around cached_property is to make it

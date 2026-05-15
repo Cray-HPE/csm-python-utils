@@ -37,6 +37,7 @@ from csm_utils.typing_imports import NoReturn
 
 _T = TypeVar("_T")
 
+
 # Was going to name this cached_property_readonly, but that hits
 # https://github.com/pylint-dev/pylint/issues/10377
 # That can be avoided by naming this class cached_property
