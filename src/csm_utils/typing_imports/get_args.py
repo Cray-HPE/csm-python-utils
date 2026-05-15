@@ -32,8 +32,13 @@ we have to define a hack version ourselves
 # We do not vary these imports based on Python version, because this
 # should only be used with Python 3.6
 from enum import Enum
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Tuple, Union, TYPE_CHECKING
 
+# This check is to make mypy happy
+if TYPE_CHECKING:
+    import sys
+    if sys.version_info >= (3, 7):
+        raise ImportError("This module cannot be imported in this Python version")
 # This try/except is mainly to make pylint happy, since it runs on
 # a Python version where we do not install typing_extensions
 try:
