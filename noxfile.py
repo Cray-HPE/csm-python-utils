@@ -49,7 +49,7 @@ def lint(session):
 @nox.session(python=PYTHON)
 def type_check(session):
     """Run Mypy with config."""
-    session.install(".[typecheck]")
+    session.install(".[type_check]")
     session.install(".")
     session.run("pip","list","--format","freeze")
     session.log("Running mypy...")
