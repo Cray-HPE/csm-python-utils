@@ -84,15 +84,6 @@ else:
     from typing_extensions import AsyncContextManager as AbstractAsyncContextManager
 
 
-# operator added to typing in 3.7
-if sys.version_info >= (3, 7):
-    # Python 3.7+
-    from typing import operator
-else:
-    # < Python 3.7
-    from typing_extensions import operator
-
-
 # OrderedDict added to typing in 3.7.2
 # deprecated in favor of collections.OrderedDict in 3.9
 if sys.version_info >= (3, 9):
@@ -247,7 +238,6 @@ __all__ = [
     "final",
     "get_args",
     "is_typeddict",
-    "operator",
     "reveal_type",
     "runtime_checkable",
 ]

@@ -38,6 +38,7 @@ from typing import (
     Optional,
     Type,
     TypeVar,
+    Union,
     overload,
 )
 
@@ -46,10 +47,11 @@ from csm_utils.typing_imports import Self
 if sys.version_info < (3, 8):
     # <= Python 3.7
     from backports.cached_property import cached_property as _cp
-else:
-    # Python 3.8 (or later, theoretically, but this is only intended
-    # for Python < 3.9
+elif sys.version_info < (3, 9):
+    # Python 3.8
     from functools import cached_property as _cp
+else:
+    raise ImportError("This module cannot be imported on this Python version")
 
 
 _S = TypeVar("_S")
@@ -92,4 +94,8 @@ class cached_property(_cp, Generic[_T]):
             owner: Optional[Type[_S]]
         ) -> _T: ...  # pylint: disable=signature-differs
 
-        def __get__(self, instance, owner=None): ...
+        def __get__(
+            self,
+            instance: Optional[_S],
+            owner: Optional[Type[_S]]=None
+        ) -> Union[Self, _T]: ...

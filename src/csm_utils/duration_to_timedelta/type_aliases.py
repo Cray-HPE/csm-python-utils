@@ -36,6 +36,6 @@ from csm_utils.typing_imports import TypeAlias
 
 # Type aliases
 TDFunc: TypeAlias = Callable[[float], datetime.timedelta]
-TDFuncMap: TypeAlias = Mapping[[str], TDFunc]
+TDFuncMap: TypeAlias = Mapping[str, TDFunc]
 StrUnitMap: TypeAlias = Mapping[str, str]
 ParseTimestampFunc: TypeAlias = Callable[[str], Tuple[float, str]]
