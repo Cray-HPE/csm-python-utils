@@ -43,7 +43,7 @@ if sys.version_info >= (3, 9):
     )
     from collections import deque as Deque
     from collections.abc import AsyncGenerator
-elif sys.version_info >= (3, 6, 1)
+elif sys.version_info >= (3, 6, 1):
     # >= Python 3.6.1, < Python 3.9
     from typing import (
         AsyncGenerator,
@@ -76,7 +76,7 @@ else:
 if sys.version_info >= (3, 9):
     # Python 3.9+
     from contextlib import AbstractAsyncContextManager
-elif sys.version_info >= (3, 6, 2)
+elif sys.version_info >= (3, 6, 2):
     # >= Python 3.6.2, < Python 3.9
     from typing import AsyncContextManager as AbstractAsyncContextManager
 else:
@@ -98,7 +98,7 @@ else:
 if sys.version_info >= (3, 9):
     # Python 3.9+
     from collections import OrderedDict
-elif sys.version_info >= (3, 7, 2)
+elif sys.version_info >= (3, 7, 2):
     # Python 3.7.2+ or 3.8
     from typing import OrderedDict
 else:
