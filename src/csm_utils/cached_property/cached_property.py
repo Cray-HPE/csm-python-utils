@@ -48,9 +48,11 @@ if TYPE_CHECKING:
     # mypy does not handle interpreting these old-version imports properly,
     # so for its sake, we define a minimal _cp class stub here
     from typing import Any
+
     class _cp:
         def __init__(self, func: Callable[[Any], Any]) -> None: ...  # pylint: disable=unused-argument
         def __get__(self, instance: Any, owner: Any = None) -> Any: ...
+
 elif sys.version_info < (3, 8):
     # <= Python 3.7
     from backports.cached_property import cached_property as _cp
