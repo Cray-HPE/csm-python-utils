@@ -49,7 +49,7 @@ def lint(session):
 @nox.session(python=PYTHON)
 def type_check(session):
     """Run Mypy with config."""
-    session.install("csm-utils[typecheck]", "--find-links", "./dist")
+    session.install("csm-utils[type_check]", "--find-links", "./dist")
     session.install("csm-utils", "--find-links", "./dist")
     session.run("pip","list","--format","freeze")
     session.log("Running mypy...")
