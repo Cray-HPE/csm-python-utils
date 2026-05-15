@@ -41,6 +41,7 @@ from .type_aliases import (
     TDFuncMap,
 )
 
+
 def duration_to_timedelta(
     timestamp: str,
     parse_timestamp: Optional[ParseTimestampFunc] = None,
