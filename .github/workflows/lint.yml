@@ -30,11 +30,32 @@ env:
   ARTIFACTORY_TOKEN: "${{ secrets.ARTIFACTORY_ALGOL60_TOKEN }}"
 
 jobs:
+  nox-lint-old:
+    name: Lint
+    strategy:
+      matrix:
+        version: ['3.6', '3.7']
+    runs-on: ubuntu
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0 # Also fetch git-tags
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.version }}
+    - name: nox
+      env:
+        GIT_REPO_NAME: "${GITHUB_REPOSITORY#*/}"
+      run: |
+        pip install .[ci]
+        pip list --format freeze
+        nox -s lint
   nox-lint:
     name: Lint
     strategy:
       matrix:
-        version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -51,11 +72,37 @@ jobs:
         pip install .[ci]
         pip list --format freeze
         nox -s lint
+  nox-typecheck-old:
+    name: Type check
+    strategy:
+      matrix:
+        version: ['3.6', '3.7']
+    runs-on: ubuntu
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0 # Also fetch git-tags
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.version }}
+    - name: Create netrc file
+      run: |
+        echo "machine artifactory.algol60.net" > ~/.netrc
+        echo "login ${{ env.ARTIFACTORY_USER }}" >> ~/.netrc
+        echo "password ${{ env.ARTIFACTORY_TOKEN }}" >> ~/.netrc
+    - name: nox
+      env:
+        GIT_REPO_NAME: "${GITHUB_REPOSITORY#*/}"
+      run: |
+        pip install .[ci]
+        pip list --format freeze
+        nox -s type_check
   nox-typecheck:
     name: Type check
     strategy:
       matrix:
-        version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
