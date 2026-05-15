@@ -78,14 +78,14 @@ class cached_property(_cp, Generic[_T]):
         # was typed the way we wanted, none of this would be
         # necessary
         @overload  # type: ignore[override]
-        def __get__(
+        def __get__(  # pylint: disable=signature-differs
             self,
             instance: None,
             owner: Type[_S],
         ) -> Self: ...  # pylint: disable=signature-differs
 
         @overload
-        def __get__(
+        def __get__(  # pylint: disable=signature-differs
             self,
             instance: _S,
             owner: Optional[Type[_S]]
