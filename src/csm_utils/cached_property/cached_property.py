@@ -50,7 +50,7 @@ if TYPE_CHECKING:
     from typing import Any
     class _cp:
         def __init__(self, func: Callable[[Any], Any]) -> None: ...
-        def __get__(self, instance: Any, owner: Any = None) -> Any: ..
+        def __get__(self, instance: Any, owner: Any = None) -> Any: ...
 elif sys.version_info < (3, 8):
     # <= Python 3.7
     from backports.cached_property import cached_property as _cp
