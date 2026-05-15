@@ -31,7 +31,6 @@ not parameterizable.
 
 # Standard imports
 import sys
-assert sys.version_info < (3, 9)
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -41,7 +40,12 @@ from typing import (
     TypeVar,
     overload,
 )
-from typing_extensions import Self
+# This try/except is mainly to make pylint happy, since it runs on
+# a Python version where we do not install typing_extensions
+try:
+    from typing_extensions import Self
+except ImportError:
+    from typing import Self
 
 if sys.version_info < (3, 8):
     # <= Python 3.7
