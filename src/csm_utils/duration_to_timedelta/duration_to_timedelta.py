@@ -28,6 +28,7 @@ duration_to_timedelta function
 
 # Standard imports
 import datetime
+from typing import Optional
 
 from .defaults import (
     DEFAULT_STR_UNIT_MAP,
@@ -42,9 +43,9 @@ from .type_aliases import (
 
 def duration_to_timedelta(
     timestamp: str,
-    parse_timestamp: ParseTimestampFunc = parse_timestamp_by_pattern,
-    str_unit_map: StrUnitMap = DEFAULT_STR_UNIT_MAP,
-    td_func_map: TDFuncMap = DEFAULT_TD_FUNC_MAP,
+    parse_timestamp: Optional[ParseTimestampFunc] = None,
+    str_unit_map: Optional[StrUnitMap] = None,
+    td_func_map: Optional[TDFuncMap] = None,
 ) -> datetime.timedelta:
     """
     Converts a str to a timedelta object:
@@ -63,6 +64,12 @@ def duration_to_timedelta(
 
     5. Call the function and return the result.
     """
+    if parse_timestamp is None:
+        parse_timestamp = parse_timestamp_by_pattern
+    if str_unit_map is None:
+        str_unit_map = DEFAULT_STR_UNIT_MAP
+    if td_func_map is None:
+        td_func_map = DEFAULT_TD_FUNC_MAP
     time_amount_float, raw_units_str = parse_timestamp(timestamp)
 
     # Use the str_unit_map to convert the string in the timestamp into

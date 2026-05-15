@@ -39,7 +39,7 @@ from .type_aliases import (
     TDFunc,
     TDFuncMap,
 )
-    
+
 __all__ = [
     "DEFAULT_STR_UNIT_MAP",
     "DEFAULT_TD_FUNC_MAP",

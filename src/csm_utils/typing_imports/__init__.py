@@ -142,7 +142,7 @@ else:
     # Not even typing_extensions has get_args in this version, so
     # we have to define a hack version ourselves
     from .get_args import get_args
-    
+
 
 # Annotated added to typing in 3.9
 # Prior to 3.9 there was no way to distinguish between built-in sets and set collections,

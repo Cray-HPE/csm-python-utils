@@ -47,7 +47,7 @@ from csm_utils.typing_imports import NoReturn
 if sys.version_info < (3, 8):
     # <= Python 3.7
     from backports.cached_property import cached_property as _cp
-else
+else:
     # Python 3.8 (or later, theoretically, but this is only intended
     # for Python < 3.9
     from functools import cached_property as _cp

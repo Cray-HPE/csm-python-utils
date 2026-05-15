@@ -28,15 +28,21 @@ BOS utilities used by both server and operators
 
 # Standard imports
 # Use these deprecated aliases in typing for backwards-compatability
-from typing import Pattern, Tuple
+from typing import Optional, Pattern, Tuple
 
 from .defaults import DEFAULT_TIME_DURATION_PATTERN
 
 
 def parse_timestamp_by_pattern(
     timestamp: str,
-    pattern: Pattern[str] = DEFAULT_TIME_DURATION_PATTERN,
-) -> Tuple[float, str]:
+    pattern: Optional[Pattern[str]] = None,
+) -> Tuple[int, str]:
+    """
+    Use the specified regex pattern and return the two matching groups,
+    converting the first to an integer
+    """
+    if pattern is None:
+        pattern = DEFAULT_TIME_DURATION_PATTERN
     match = pattern.search(timestamp)
     if match is None:
         raise ValueError(
