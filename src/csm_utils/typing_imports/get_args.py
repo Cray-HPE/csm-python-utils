@@ -34,17 +34,12 @@ we have to define a hack version ourselves
 from enum import Enum
 from typing import Any, List, Tuple, Union, TYPE_CHECKING
 
-# This check is to make mypy happy
-if TYPE_CHECKING:
-    import sys
-    if sys.version_info >= (3, 7):
-        raise ImportError("This module cannot be imported in this Python version")
 # This try/except is mainly to make pylint happy, since it runs on
 # a Python version where we do not install typing_extensions
 try:
     from typing_extensions import TypeAlias
 except ImportError:
-    from typing import TypeAlias
+    from typing import TypeAlias  # pylint: disable=ungrouped-imports  # types: ignore[attr-defined,no-redef]
 
 
 # These are the valid types that can be used inside a Literal (except
