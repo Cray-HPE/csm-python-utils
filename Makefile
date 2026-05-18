@@ -25,8 +25,8 @@
 # cms-meta-tools repo to ./cms_meta_tools
 
 NAME ?= csm-utils
-MOD_NAME ?= $(echo $NAME | tr - _)
-PKG_VERSION := $(cat .version)
+MOD_NAME ?= $(subst -,_,$(NAME))
+PKG_VERSION := $(shell cat .version)
 PYTHON_BIN := python$(PY_VERSION)
 PYLINT_VENV_BASE_DIR ?= pylint-venv
 PYLINT_VENV ?= $(PYLINT_VENV_BASE_DIR)/$(PY_VERSION)
