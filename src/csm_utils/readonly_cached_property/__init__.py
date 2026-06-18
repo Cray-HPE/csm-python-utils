@@ -23,19 +23,13 @@
 #
 
 """
-csm-utils package
+Parameterizable cached_property decorator
 """
 
-from . import (
-    cached_property,
-    logging,
-    readonly_cached_property,
-    typing_imports,
-)
+# Was going to name this cached_property_readonly, but that hits
+# https://github.com/pylint-dev/pylint/issues/10377
+# That can be avoided by naming this class cached_property
+from .cached_property import cached_property
 
-__all__ = [
-    "cached_property",
-    "logging",
-    "readonly_cached_property",
-    "typing_imports",
-]
+# Explicitly re-export cached_property
+__all__ = ['cached_property']

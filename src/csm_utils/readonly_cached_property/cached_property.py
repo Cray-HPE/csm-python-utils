@@ -23,19 +23,31 @@
 #
 
 """
-csm-utils package
+Parameterizable read-only cached_property decorator
 """
 
-from . import (
-    cached_property,
-    logging,
-    readonly_cached_property,
-    typing_imports,
+from typing import (
+    Generic,
+    TypeVar,
 )
 
-__all__ = [
-    "cached_property",
-    "logging",
-    "readonly_cached_property",
-    "typing_imports",
-]
+from csm_utils.cached_property import cached_property as _rw_cached_property
+from csm_utils.typing_imports import NoReturn
+
+
+_T = TypeVar("_T")
+
+
+# Was going to name this cached_property_readonly, but that hits
+# https://github.com/pylint-dev/pylint/issues/10377
+# That can be avoided by naming this class cached_property
+class cached_property(_rw_cached_property[_T], Generic[_T]):
+    """
+    A read-only version of the @functools.cached_property decorator
+    """
+    def __set__(self, instance: object, val: _T) -> NoReturn:
+        """
+        Raise an AttributeError if someone tries to set the attribute
+        """
+        raise AttributeError(
+            f"Atrribute {self.attrname} in class {type(instance).__name__} is read-only")

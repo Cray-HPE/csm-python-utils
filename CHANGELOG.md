@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added `csm-utils.cached_property`
+- Added `csm-utils.readonly_cached_property`
 - Added sniff test
 
 ### Changed

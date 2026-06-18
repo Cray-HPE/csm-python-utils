@@ -29,16 +29,23 @@ import csm_utils
 
 
 class test_cp:
-    """ Test cached_property """
+    """ Test cached properties """
     def __init__(self) -> None:
-        """ Initialize internal counter to 0 """
-        self.harf_calls = 0
+        """ Initialize internal counters to 0 """
+        self.cprw_calls = 0
+        self.cpro_calls = 0
 
     @csm_utils.cached_property.cached_property
-    def harf(self) -> int:
-        """ Increment harf_calls then always return 5 """
-        self.harf_calls += 1
+    def cprw(self) -> int:
+        """ Increment cprw_calls then always return 5 """
+        self.cprw_calls += 1
         return 5
+
+    @csm_utils.readonly_cached_property.cached_property
+    def cpro(self) -> int:
+        """ Increment cpro_calls then always return 57 """
+        self.cpro_calls += 1
+        return 57
 
 
 def int_func(i: int) -> str:
@@ -53,32 +60,69 @@ def int_func(i: int) -> str:
 def main() -> None:
     """ Run test """
     tcp = test_cp()
+    # Both call counts should initially be 0
+    assert tcp.cpro_calls == 0
+    assert tcp.cprw_calls == 0
 
-    # harf_calls should initially be 0
-    assert tcp.harf_calls == 0
+    x_rw = tcp.cprw
+    # Now cprw calls should be 1, cpro should be 0
+    assert tcp.cpro_calls == 0
+    assert tcp.cprw_calls == 1
 
-    xvar = tcp.harf
-    # Now harf calls should be 1
-    assert tcp.harf_calls == 1
+    x_ro = tcp.cpro
+    # Now both should be 1
+    assert tcp.cpro_calls == 1
+    assert tcp.cprw_calls == 1
 
-    xvar_str = int_func(xvar)
+    x_ro_str = int_func(x_ro)
     # Make sure we are getting the right value
-    assert xvar_str == "5"
+    assert x_ro_str == "57"
 
-    yvar = tcp.harf
+    x_rw_str = int_func(x_rw)
+    # Make sure we are getting the right value
+    assert x_rw_str == "5"
+
+    y_ro = tcp.cpro
     # An additional call to the property should hit the cache, so
-    # harf_calls should still be 1 after that
-    assert tcp.harf_calls == 1
+    # both counts should still be 1
+    assert tcp.cpro_calls == 1
+    assert tcp.cprw_calls == 1
 
-    # And just as a sanity check, make sure that we got the same value
-    assert yvar == xvar
+    y_rw = tcp.cprw
+    # An additional call to the property should hit the cache, so
+    # both counts should still be 1
+    assert tcp.cpro_calls == 1
+    assert tcp.cprw_calls == 1
 
-    # This is not a read-only cached property, so let's check that too
-    tcp.harf = 10
-    zvar = tcp.harf
-    # The harf_count should still be 1, and zvar should be 10
-    assert tcp.harf_calls == 1
-    assert zvar == 10
+    # And just as a sanity check, make sure that we got the same values
+    assert y_ro == x_ro
+    assert y_rw == x_rw
+
+    # cprw is not a read-only cached property, so let's check that too
+    tcp.cprw = 10
+    z_rw = tcp.cprw
+    # The counts should still be 1, and z_rw should be 10
+    assert tcp.cpro_calls == 1
+    assert tcp.cprw_calls == 1
+    assert z_rw == 10
+
+    # cpro is read-only, so we should get an AttributeError if we try to set it
+    try:
+        tcp.cpro = 10
+        # We should never get here
+        assert False, "We were able to write to the read-only cached property"
+    except AttributeError:
+        pass
+
+    # The counts should still be 1
+    assert tcp.cpro_calls == 1
+    assert tcp.cprw_calls == 1
+
+    assert tcp.cpro == 57
+
+    # The counts should still be 1
+    assert tcp.cpro_calls == 1
+    assert tcp.cprw_calls == 1
 
     print("No errors!")
 
