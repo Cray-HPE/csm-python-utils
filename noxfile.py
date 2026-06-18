@@ -24,33 +24,74 @@
 """Nox definitions for linting, type checks, and tests"""
 
 from __future__ import absolute_import
+from typing import Optional
 import nox  # pylint: disable=import-error
 
 PYTHON = ["3"]
 
+INSTALL_ARGS = [ "csm-utils", "--find-links", "./dist" ]
+
+def install(session, keyword: Optional[str] = None) -> None:
+    """
+    Install csm-utils and (optionally) csm-utils[keyword] from ./dist
+    """
+    if keyword:
+        session.install(f"csm-utils[{keyword}]", *INSTALL_ARGS)
+    else:
+        session.install(*INSTALL_ARGS)
 
 @nox.session(python=PYTHON)
 def lint(session):
     """Run linters.
-    Run Pylint and Pycodestyle against src and tests.
+    Run Pylint against src and tests.
     Returns a failure if the linters find linting errors or sufficiently
     serious code quality issues.
     """
-    session.install("csm-utils[lint]", "--find-links", "./dist")
-    session.install("csm-utils", "--find-links", "./dist")
+    install(session, "lint")
     session.run("pip","list","--format","freeze")
     session.log("Running pylint...")
     session.run("pylint", "--rcfile=.pylintrc", "csm_utils")
+    session.log("Running pylint on test.py...")
+    session.run("pylint", "--rcfile=.pylintrc", "test.py")
 
+@nox.session(python=PYTHON)
+def style(session):
+    """Run linters.
+    Run Pycodestyle against src and tests.
+    """
+    install(session, "style")
+    session.run("pip","list","--format","freeze")
     session.log("Running pycodestyle...")
     session.run("pycodestyle", "--config=.pycodestyle", "src")
-
+    session.log("Running pycodestyle on test.py...")
+    session.run("pycodestyle", "--config=.pycodestyle", "test.py")
 
 @nox.session(python=PYTHON)
 def type_check(session):
     """Run Mypy with config."""
-    session.install("csm-utils[type_check]", "--find-links", "./dist")
-    session.install("csm-utils", "--find-links", "./dist")
+    install(session, "type_check")
     session.run("pip","list","--format","freeze")
     session.log("Running mypy...")
     session.run("mypy", "--strict", "-p", "csm_utils")
+    session.log("Running mypy on test.py...")
+    session.run("mypy", "--strict", "test.py")
+    # Make sure that changes did not break requests_retry_session, which
+    # uses this module
+    session.install(
+        "--trusted-host",
+        "artifactory.algol60.net",
+        "--extra-index-url",
+        "http://artifactory.algol60.net/artifactory/csm-python-modules/simple",
+        "requests-retry-session",
+        "requests-retry-session[type_check1]",
+    )
+    session.run("pip","list","--format","freeze")
+    session.run("mypy", "--strict", "-p", "requests_retry_session")
+
+@nox.session(python=PYTHON)
+def sniff_test(session):
+    """Run Mypy with config."""
+    install(session)
+    session.run("pip","list","--format","freeze")
+    session.log("Running test...")
+    session.run("python", "./test.py")

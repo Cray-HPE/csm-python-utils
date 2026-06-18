@@ -64,8 +64,10 @@ ci = [
     "nox",
 ]
 lint = [
-    "pycodestyle",
     "pylint",
+]
+style = [
+    "pycodestyle",
 ]
 type_check = [
     "mypy",

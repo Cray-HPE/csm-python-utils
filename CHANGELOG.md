@@ -8,8 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
 - Added `csm-utils.cached_property`
+- Added sniff test
+
+### Changed
+- Refactored lint github workflow
 
 ## [0.1.0] - 2026-05-18
 
