@@ -24,7 +24,7 @@
 """
 Basic sniff test of csm-utils
 """
-import ABC, abstractmethod
+from abc import ABC, abstractmethod
 #import datetime
 from typing import ClassVar, Type
 
