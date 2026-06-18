@@ -25,7 +25,6 @@
 Basic sniff test of csm-utils
 """
 from abc import ABC, abstractmethod
-#import datetime
 from typing import ClassVar, Type
 
 import csm_utils
