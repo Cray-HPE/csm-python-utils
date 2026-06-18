@@ -24,29 +24,13 @@
 """
 Basic sniff test of csm-utils
 """
-
-from typing import ClassVar, Type
+from typing import Type, Union
 
 import csm_utils
 
 
-class test_cp(csm_utils.typing_imports.Protocol):
-    """ Test cached properties """
-    # Whether cp is readonly or not
-    readonly: ClassVar[bool]
-
-    @property
-    def cp_calls(self) -> int:
-        """ Return _cp_calls counter """
-
-    @property
-    def cp(self) -> int:
-        """ cached property """
-
-
 class base_test_cp:
     """ base class """
-
     def __init__(self) -> None:
         """ Initialize internal counter to 0 """
         self._cp_calls = 0
@@ -57,10 +41,9 @@ class base_test_cp:
         return self._cp_calls
 
 
+@csm_utils.typing_imports.final
 class test_rw_cp(base_test_cp):
     """ Test rw-cached properties """
-    readonly = False
-
     @csm_utils.cached_property.cached_property
     def cp(self) -> int:
         """ Increment cp_calls then always return 5 """
@@ -68,10 +51,9 @@ class test_rw_cp(base_test_cp):
         return 5
 
 
+@csm_utils.typing_imports.final
 class test_ro_cp(base_test_cp):
     """ Test ro-cached properties """
-    readonly = True
-
     @csm_utils.readonly_cached_property.cached_property
     def cp(self) -> int:
         """ Increment cp_calls then always return 57 """
@@ -89,11 +71,12 @@ def int_func(i: int) -> str:
 
 
 def test_cached_property(
-    tcp_class: Type[test_cp],
+    tcp_class: Union[Type[test_ro_cp], Type[test_rw_cp]],
     expected_value: int
 ) -> None:
     """ Test cached_property and readonly_cached_property """
     tcp = tcp_class()
+    readonly = isinstance(tcp, test_ro_cp)
 
     # Call count should initially be 0
     assert tcp.cp_calls == 0
@@ -117,13 +100,13 @@ def test_cached_property(
     try:
         # Have to ignore mypy complaining that this may be read-only
         tcp.cp = 10  # type: ignore[misc]
-        if tcp_class.readonly:
+        if readonly:
             # We should never get here
             assert False, "We were able to write to the read-only cached property"
         else:
             expected_value = 10
     except AttributeError:
-        if not tcp_class.readonly:
+        if not readonly:
             assert False, "Not able to write to readwrite property"
 
     # Count should still be 1
