@@ -108,7 +108,7 @@ def test_cached_property(
     assert second_access == expected_value
 
     try:
-        tcp.cp = 10
+        tcp.cp = 10  # type: ignore
         if tcp_class.readonly:
             # We should never get here
             assert False, "We were able to write to the read-only cached property"
