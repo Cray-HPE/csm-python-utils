@@ -24,27 +24,52 @@
 """
 Basic sniff test of csm-utils
 """
+import ABC, abstractmethod
+#import datetime
+from typing import ClassVar, Type
 
 import csm_utils
 
 
-class test_cp:
+class test_cp(ABC):
     """ Test cached properties """
+    # Whether cp is readonly or not
+    readonly: ClassVar[bool]
+
     def __init__(self) -> None:
-        """ Initialize internal counters to 0 """
-        self.cprw_calls = 0
-        self.cpro_calls = 0
+        """ Initialize internal counter to 0 """
+        self._cp_calls = 0
+
+    @property
+    def cp_calls(self) -> int:
+        """ Return _cp_calls counter """
+        return self._cp_calls
+
+    @property
+    @abstractmethod
+    def cp(self) -> int:
+        """ abstract cached property """
+
+
+class test_rw_cp(test_cp):
+    """ Test rw-cached properties """
+    readonly = False
 
     @csm_utils.cached_property.cached_property
-    def cprw(self) -> int:
+    def cp(self) -> int:
         """ Increment cprw_calls then always return 5 """
-        self.cprw_calls += 1
+        self._cp_calls += 1
         return 5
 
+
+class test_ro_cp(test_cp):
+    """ Test ro-cached properties """
+    readonly = True
+
     @csm_utils.readonly_cached_property.cached_property
-    def cpro(self) -> int:
+    def cp(self) -> int:
         """ Increment cpro_calls then always return 57 """
-        self.cpro_calls += 1
+        self._cp_calls += 1
         return 57
 
 
@@ -57,73 +82,59 @@ def int_func(i: int) -> str:
     return str(i)
 
 
+def test_cached_property(
+    tcp_class: Type[test_cp],
+    expected_value: int
+) -> None:
+    """ Test cached_property and readonly_cached_property """
+    tcp = tcp_class()
+
+    # Call count should initially be 0
+    assert tcp.cp_calls == 0
+
+    first_access = tcp.cp
+    # Now count should be 1
+    assert tcp.cp_calls == 1
+    assert first_access == expected_value
+
+    # Make sure mypy does not complain about this
+    int_func(first_access)
+
+    second_access = tcp.cp
+    # An additional call to the property should hit the cache, so
+    # count should still be 1
+    assert tcp.cp_calls == 1
+
+    # And just as a sanity check, make sure that we got the right value
+    assert second_access == expected_value
+
+    try:
+        tcp.cp = 10
+        if tcp_class.readonly:
+            # We should never get here
+            assert False, "We were able to write to the read-only cached property"
+        else:
+            expected_value = 10
+    except AttributeError:
+        if not tcp_class.readonly:
+            assert False, "Not able to write to readwrite property"
+
+    # Count should still be 1
+    assert tcp.cp_calls == 1
+
+    # Make sure the value is as expected_value
+    assert tcp.cp == expected_value
+
+    # Count should still be 1
+    assert tcp.cp_calls == 1
+
+    return
+
+
 def main() -> None:
     """ Run test """
-    tcp = test_cp()
-    # Both call counts should initially be 0
-    assert tcp.cpro_calls == 0
-    assert tcp.cprw_calls == 0
-
-    x_rw = tcp.cprw
-    # Now cprw calls should be 1, cpro should be 0
-    assert tcp.cpro_calls == 0
-    assert tcp.cprw_calls == 1
-
-    x_ro = tcp.cpro
-    # Now both should be 1
-    assert tcp.cpro_calls == 1
-    assert tcp.cprw_calls == 1
-
-    x_ro_str = int_func(x_ro)
-    # Make sure we are getting the right value
-    assert x_ro_str == "57"
-
-    x_rw_str = int_func(x_rw)
-    # Make sure we are getting the right value
-    assert x_rw_str == "5"
-
-    y_ro = tcp.cpro
-    # An additional call to the property should hit the cache, so
-    # both counts should still be 1
-    assert tcp.cpro_calls == 1
-    assert tcp.cprw_calls == 1
-
-    y_rw = tcp.cprw
-    # An additional call to the property should hit the cache, so
-    # both counts should still be 1
-    assert tcp.cpro_calls == 1
-    assert tcp.cprw_calls == 1
-
-    # And just as a sanity check, make sure that we got the same values
-    assert y_ro == x_ro
-    assert y_rw == x_rw
-
-    # cprw is not a read-only cached property, so let's check that too
-    tcp.cprw = 10
-    z_rw = tcp.cprw
-    # The counts should still be 1, and z_rw should be 10
-    assert tcp.cpro_calls == 1
-    assert tcp.cprw_calls == 1
-    assert z_rw == 10
-
-    # cpro is read-only, so we should get an AttributeError if we try to set it
-    try:
-        tcp.cpro = 10
-        # We should never get here
-        assert False, "We were able to write to the read-only cached property"
-    except AttributeError:
-        pass
-
-    # The counts should still be 1
-    assert tcp.cpro_calls == 1
-    assert tcp.cprw_calls == 1
-
-    assert tcp.cpro == 57
-
-    # The counts should still be 1
-    assert tcp.cpro_calls == 1
-    assert tcp.cprw_calls == 1
-
+    test_cached_property(test_rw_cp, 5)
+    test_cached_property(test_ro_cp, 57)
     print("No errors!")
 
 

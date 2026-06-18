@@ -23,21 +23,19 @@
 #
 
 """
-csm-utils package
+Type aliases used for duration_to_timedelta
 """
 
-from . import (
-    cached_property,
-    duration_to_timedelta,
-    logging,
-    readonly_cached_property,
-    typing_imports,
-)
+# Standard imports
+import datetime
+# Use these deprecated aliases for backwards compatability
+from typing import Callable, Mapping, Tuple
 
-__all__ = [
-    "cached_property",
-    "duration_to_timedelta",
-    "logging",
-    "readonly_cached_property",
-    "typing_imports",
-]
+from csm_utils.typing_imports import TypeAlias
+
+
+# Type aliases
+TDFunc: TypeAlias = Callable[[float], datetime.timedelta]
+TDFuncMap: TypeAlias = Mapping[str, TDFunc]
+StrUnitMap: TypeAlias = Mapping[str, str]
+ParseTimestampFunc: TypeAlias = Callable[[str], Tuple[float, str]]

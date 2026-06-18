@@ -23,21 +23,29 @@
 #
 
 """
-csm-utils package
+BOS utilities used by both server and operators
 """
 
-from . import (
-    cached_property,
-    duration_to_timedelta,
-    logging,
-    readonly_cached_property,
-    typing_imports,
-)
+# Standard imports
+# Use these deprecated aliases in typing for backwards-compatability
+from typing import Optional, Pattern, Tuple
 
-__all__ = [
-    "cached_property",
-    "duration_to_timedelta",
-    "logging",
-    "readonly_cached_property",
-    "typing_imports",
-]
+from .defaults import DEFAULT_TIME_DURATION_PATTERN
+
+
+def parse_timestamp_by_pattern(
+    timestamp: str,
+    pattern: Optional[Pattern[str]] = None,
+) -> Tuple[int, str]:
+    """
+    Use the specified regex pattern and return the two matching groups,
+    converting the first to an integer
+    """
+    if pattern is None:
+        pattern = DEFAULT_TIME_DURATION_PATTERN
+    match = pattern.search(timestamp)
+    if match is None:
+        raise ValueError(
+                f"Timestamp string does not match expected format: '{timestamp}'")
+    timestr, durationstr = match.groups()
+    return int(timestr), durationstr
