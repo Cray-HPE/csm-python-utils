@@ -23,17 +23,19 @@
 #
 
 """
-csm-utils package
+Parameterizable cached_property decorator
 """
 
-from . import (
-    cached_property,
-    logging,
-    typing_imports,
-)
+# Standard imports
+import sys
 
-__all__ = [
-    "cached_property",
-    "logging",
-    "typing_imports",
-]
+if sys.version_info >= (3, 9):
+    # The regular decorator from functools is parameterizable in Python 3.9+
+    from functools import cached_property
+else:
+    # Python < 3.9
+    # Use our homegrown wrapper to accomplish this
+    from .cached_property import cached_property
+
+# Explicitly re-export only cached_property
+__all__ = ['cached_property']
