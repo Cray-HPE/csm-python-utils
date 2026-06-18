@@ -98,8 +98,7 @@ def test_cached_property(
     assert second_access == expected_value
 
     try:
-        # Have to ignore mypy complaining that this may be read-only
-        tcp.cp = 10  # type: ignore[misc]
+        tcp.cp = 10
         if readonly:
             # We should never get here
             assert False, "We were able to write to the read-only cached property"
