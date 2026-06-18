@@ -24,16 +24,28 @@
 """
 Basic sniff test of csm-utils
 """
-from abc import ABC, abstractmethod
+
 from typing import ClassVar, Type
 
 import csm_utils
 
 
-class test_cp(ABC):
+class test_cp(csm_utils.typing_imports.Protocol):
     """ Test cached properties """
     # Whether cp is readonly or not
     readonly: ClassVar[bool]
+
+    @property
+    def cp_calls(self) -> int:
+        """ Return _cp_calls counter """
+
+    @property
+    def cp(self) -> int:
+        """ cached property """
+
+
+class base_test_cp:
+    """ base class """
 
     def __init__(self) -> None:
         """ Initialize internal counter to 0 """
@@ -44,30 +56,25 @@ class test_cp(ABC):
         """ Return _cp_calls counter """
         return self._cp_calls
 
-    @property
-    @abstractmethod
-    def cp(self) -> int:
-        """ abstract cached property """
 
-
-class test_rw_cp(test_cp):
+class test_rw_cp(base_test_cp):
     """ Test rw-cached properties """
     readonly = False
 
     @csm_utils.cached_property.cached_property
     def cp(self) -> int:
-        """ Increment cprw_calls then always return 5 """
+        """ Increment cp_calls then always return 5 """
         self._cp_calls += 1
         return 5
 
 
-class test_ro_cp(test_cp):
+class test_ro_cp(base_test_cp):
     """ Test ro-cached properties """
     readonly = True
 
     @csm_utils.readonly_cached_property.cached_property
     def cp(self) -> int:
-        """ Increment cpro_calls then always return 57 """
+        """ Increment cp_calls then always return 57 """
         self._cp_calls += 1
         return 57
 
@@ -108,7 +115,8 @@ def test_cached_property(
     assert second_access == expected_value
 
     try:
-        tcp.cp = 10  # type: ignore
+        # Have to ignore mypy complaining that this may be read-only
+        tcp.cp = 10  # type: ignore[misc]
         if tcp_class.readonly:
             # We should never get here
             assert False, "We were able to write to the read-only cached property"
@@ -126,8 +134,6 @@ def test_cached_property(
 
     # Count should still be 1
     assert tcp.cp_calls == 1
-
-    return
 
 
 def main() -> None:
