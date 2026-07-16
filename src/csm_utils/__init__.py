@@ -29,9 +29,11 @@ csm-utils package
 from . import (
     logging,
     typing_imports,
+    wait_interval,
 )
 
 __all__ = [
     "logging",
     "typing_imports",
+    "wait_interval",
 ]
